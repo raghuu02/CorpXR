@@ -48,12 +48,12 @@ nav a:hover:not([aria-current]){color:var(--ink)}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
 
 /* hero */
-.stage{position:relative;margin:28px auto 0;width:min(1080px,100% - 24px);border-radius:28px;background:var(--stage);overflow:hidden;--x:30%;--y:35%;touch-action:pan-y}
-.layer{padding:clamp(40px,8vw,96px) clamp(24px,6vw,72px);min-height:min(78vh,620px);display:flex;flex-direction:column;justify-content:center;gap:28px}
+.stage{position:relative;margin:28px auto 0;width:min(1080px,100% - 24px);border-radius:28px;background:var(--stage);overflow:hidden;--x:30%;--y:35%;--r:260px}
+.layer{padding:clamp(40px,8vw,96px) clamp(24px,6vw,72px) clamp(100px,12vw,140px);min-height:min(78vh,620px);display:flex;flex-direction:column;justify-content:center;gap:28px}
 .layer h1{font-size:clamp(46px,10.5vw,128px);font-weight:800;color:var(--stage-dim);letter-spacing:-.045em}
 .layer .sub{font:500 clamp(19px,2.6vw,28px)/1.35 var(--disp);color:var(--stage-dim);max-width:22ch}
 .layer .words{display:flex;flex-wrap:wrap;gap:8px 18px;font:600 clamp(15px,2vw,20px) var(--disp);color:var(--stage-dim)}
-.layer.lit{position:absolute;inset:0;pointer-events:none;color:var(--stage-lit);-webkit-mask-image:radial-gradient(circle 260px at var(--x) var(--y),#000 0,rgba(0,0,0,.55) 55%,transparent 100%);mask-image:radial-gradient(circle 260px at var(--x) var(--y),#000 0,rgba(0,0,0,.55) 55%,transparent 100%)}
+.layer.lit{position:absolute;inset:0;pointer-events:none;color:var(--stage-lit);-webkit-mask-image:radial-gradient(circle var(--r) at var(--x) var(--y),#000 0,rgba(0,0,0,.55) 55%,transparent 100%);mask-image:radial-gradient(circle var(--r) at var(--x) var(--y),#000 0,rgba(0,0,0,.55) 55%,transparent 100%)}
 .layer.lit h1,.layer.lit .sub,.layer.lit .words{color:var(--stage-lit)}
 .layer.lit .words{color:var(--glow)}
 .stage .cta{position:absolute;left:clamp(24px,6vw,72px);bottom:clamp(24px,5vw,48px);z-index:3}
@@ -138,12 +138,16 @@ body{overflow-x:clip;background-image:radial-gradient(var(--line) 1.3px,transpar
 .gscore{font:600 14px var(--body);color:var(--muted)}
 .logo img{height:48px;width:auto;display:block}
 @media (max-width:820px){.logo img{height:40px}}
+.layer.lit .cta{visibility:hidden}
 .view{display:none}.view.on{display:block}
 @media (max-width:820px){
   .split,.tri,.path,.row{grid-template-columns:1fr}
   .hint{display:none}
-  .stage .cta{position:static;margin:0 clamp(24px,6vw,72px) 36px;display:inline-block;width:fit-content}
-  .layer{min-height:0}
+  .stage .cta{position:static;align-self:flex-start}
+  .layer{min-height:0;padding:44px 24px 32px}
+  .stage{--r:150px}
+  .layer h1{font-size:clamp(40px,13vw,64px)}
+  .layer .sub{max-width:none}
   .bar{height:58px}
   nav a{padding:7px 10px;font-size:14px}
 }
@@ -169,8 +173,8 @@ body{overflow-x:clip;background-image:radial-gradient(var(--line) 1.3px,transpar
       <h1>Behind the Business.</h1>
       <p class="sub">Your company has a story. We make it heard.</p>
       <div class="words"><span>the people</span><span>the culture</span><span>the decisions</span><span>the chaos</span><span>the growth</span></div>
+      <a class="btn cta" href="#work">Let’s Talk</a>
     </div>
-    <a class="btn cta" href="#work">Let’s Talk</a>
     <span class="hint">Move your cursor. Find the lights.</span>
     <svg class="sticker" viewBox="0 0 160 160" aria-hidden="true"><defs><path id="cc" d="M80,80 m-58,0 a58,58 0 1,1 116,0 a58,58 0 1,1 -116,0"/></defs><circle cx="80" cy="80" r="78"/><text><textPath href="#cc" textLength="356" lengthAdjust="spacing">NO PR TEAMS WERE HARMED ✦ NO PR TEAMS WERE HARMED ✦</textPath></text><text x="80" y="94" text-anchor="middle" style="font-size:40px">🎬</text></svg>
   </div>
@@ -342,13 +346,16 @@ body{overflow-x:clip;background-image:radial-gradient(var(--line) 1.3px,transpar
   st.insertBefore(lit,base.nextSibling);
   var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches,mouse=false;
   function set(x,y){st.style.setProperty("--x",x+"px");st.style.setProperty("--y",y+"px")}
-  st.addEventListener("pointermove",function(e){mouse=true;var r=st.getBoundingClientRect();set(e.clientX-r.left,e.clientY-r.top)});
-  st.addEventListener("pointerleave",function(){mouse=false});
+  st.addEventListener("pointermove",function(e){if(e.pointerType==="touch")return;mouse=true;var r=st.getBoundingClientRect();set(e.clientX-r.left,e.clientY-r.top)});
+  st.addEventListener("pointerleave",function(e){if(e.pointerType!=="touch")mouse=false});
+  function tp(e){var t=e.touches[0];if(!t)return;mouse=true;var r=st.getBoundingClientRect();set(t.clientX-r.left,t.clientY-r.top)}
+  st.addEventListener("touchstart",tp,{passive:true});st.addEventListener("touchmove",tp,{passive:true});
+  st.addEventListener("touchend",function(){setTimeout(function(){mouse=false},1200)},{passive:true});
   if(reduce){st.style.setProperty("--x","50%");st.style.setProperty("--y","45%");}
   else{var t0=performance.now();(function tick(t){
     if(!mouse&&document.getElementById("v-home").classList.contains("on")){
       var r=st.getBoundingClientRect(),k=(t-t0)/1800;
-      set(r.width*(.5+.38*Math.sin(k)),r.height*(.45+.3*Math.sin(k*1.7+1)));
+      set(r.width*(.5+.4*Math.sin(k)),r.height*(.5+.42*Math.sin(k*.9+1)));
     }
     requestAnimationFrame(tick);
   })(t0);}
